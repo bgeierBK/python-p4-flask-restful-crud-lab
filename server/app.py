@@ -46,6 +46,28 @@ class PlantByID(Resource):
     def get(self, id):
         plant = Plant.query.filter_by(id=id).first().to_dict()
         return make_response(jsonify(plant), 200)
+    
+    def patch(self, id):
+        plant = Plant.query.get(id)
+        if plant:
+            plant.is_in_stock = request.json.get('is_in_stock', plant.is_in_stock)
+            db.session.commit()
+            return plant.to_dict()
+        else:
+            return{'message': 'Plant Not Found'}
+    
+    def delete(self, id):
+        record = Plant.query.filter(Plant.id ==id).first()
+
+        db.session.delete(record)
+        db. session.commit()
+
+        response= make_response(
+            "", 204
+        )
+
+        return response
+
 
 
 api.add_resource(PlantByID, '/plants/<int:id>')
